@@ -1,0 +1,64 @@
+login to node1 and update the configuration
+
+elasticsearch conf changes : (perform the changes on all 3 nodes for ES)
+conf file : /etc/elasticsearch/elasticsearch.yml
+--------
+node.name: "es1"              ----> change this on each node as per the hostname set
+cluster.name: "es_cluster"    ----> add the cluster name
+http.port: 9200	              -----> update port , default is 9200
+discovery.seed_hosts: ["es2:9200","es3:9200"]         ----> on each server add other 2 nodes host:port details
+cluster.initial_master_nodes: ["es1","es2","es3"]    ----> initial set of master eligible nodes
+path.logs: /var/lib/elasticsearch         ---> change the default paths if needed, make sure updated directory exists
+path.data: /var/log/elasticsearch	  ---> change the default paths if needed, make sure updated directory exists
+---------
+
+jvm options update for ES (perform changes on each node):
+file: /etc/elasticsearch/jvm.options ----> update Xms & Xmx values (min 1g) as per need
+-----
+-Xms1g
+-Xmx1g
+----
+
+Kibana conf changes: (perform on node1)
+conf file : /etc/kibana/kibana.yml
+--------
+server.port: 5601 		-----> update port if needed , default 5601
+server.host: "node1"              ----> update the server host
+elasticsearch.hosts: ["http://es1:9200", "http://es2:9200", "http://es3:9200"]        ---> update all the node:port details for ES servers in cluster
+elasticsearch.username: "kibana"
+elasticsearch.password: "<kibana_password>"
+---------
+
+logstash conf changes: (perform on node1)
+conf file : /etc/logstash/logstash.yml
+-------
+node.name: lg01       ---> update the logstash nodename as per your need
+xpack.monitoring.enabled: true	----> to view Logstash stats under the Monitoring tab in Kibana
+xpack.monitoring.elasticssearch.url: ["http://es1:9200", "http://es2:9200", "http://es3:9200"]
+--------
+update jvm options
+file : /etc/logstash/jvm.options
+-----
+-Xms1g
+-Xmx1g
+----
+
+update conf for logstash conf pipeline
+
+/etc/logstash/conf.d/logstash.conf
+input {
+  beats {
+    port => 5042
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => ["es1:9200","es2:9200","es3:9200"]                     ---> update all the ES node details
+    manage_template => false
+    index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+    document_type => "%{[@metadata][type]}"
+  }
+}
+
+

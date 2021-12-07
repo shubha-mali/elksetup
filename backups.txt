@@ -1,0 +1,26 @@
+Use ES backup api to create cluster snapshot backup
+
+steps:
+	- update path.repo in /etc/elasticsearch/elasticsearch.yml with appropriate backup location on server
+	- provide appropriate permission to elasticsearch user for the backup location
+	- restart ES : systemctl restart elasticsearch
+	- create ES cluster snapshot
+	curl -X PUT "localhost:9200/_snapshot/es_backup?pretty" -H 'Content-Type: application/json' -d'
+	{
+ 		 "type": "fs",
+ 		 "settings": {
+ 		   "location": "backup_path"           ---> provide the path mentioned in path.repo
+ 	 }
+	}
+
+
+
+For Kibana dashboard backups 
+
+export your current dashboards, searches and visualizations from your Kibana instance.  
+Go to Kibana
+Click on Management
+Click on Saved Objects
+Once inside of "Edit Saved Objects" you can:
+Click on Export Everything
+Or select each Dashboards, Searches and Visualizations you need and click on Export

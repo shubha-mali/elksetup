@@ -1,0 +1,55 @@
+
+ES cert configuration
+
+ES node1
+conf file: /etc/elasticsearch/elasticsearch.yml
+add/update follwing variables in conf file
+
+xpack.security.enabled: true
+xpack.security.http.ssl.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.http.ssl.key: certs/es1.key
+xpack.security.http.ssl.certificate: certs/es1.crt
+xpack.security.http.ssl.certificate_authorities: certs/ca.crt
+xpack.security.transport.ssl.key: certs/es1.key
+xpack.security.transport.ssl.certificate: certs/es1.crt
+xpack.security.transport.ssl
+
+ES node2 :
+first copy the certs created on node1 to node2 in /etc/elasticsearch/certs path
+then update same above variables in conf on node2 with "es2" cert details
+
+ES node3 :
+first copy the certs created on node1 to node3 in /etc/elasticsearch/certs path
+then update same above variables in conf on node3 with "es3" cert details
+
+----------------------------------------------------------------------------------------
+kibana cert configuration (node1)
+
+conf file : /etc/kibana/config/kibana.yml
+
+server.ssl.enabled: true
+server.ssl.certificate: /etc/kibana/config/certs/kibana.crt
+server.ssl.key: /etc/kibana/config/certs/kibana.key
+elasticsearch.ssl.certificateAuthorities: [ "/etc/kibana/config/certs/ca.crt" ]
+
+-----------------------------------------------------------------------------------------
+logstash cert configuration (node1)
+conf file : /etc/logstash/logstash.yml
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.username: logstash_system
+xpack.monitoring.elasticsearch.password: '<logstash_system_password>'
+xpack.monitoring.elasticsearch.hosts: [ 'https://es1:9200','https://es2:9200','https://es3:9200' ]
+xpack.monitoring.elasticsearch.ssl.certificate_authority: /etc/logstash/config/certs/ca.crt
+
+/etc/logstash/conf.d/logstash.conf
+add below in beats section - 
+    ssl => true
+    ssl_key => '/etc/logstash/config/certs/logstash.pkcs8.key'
+    ssl_certificate => '/etc/logstash/config/certs/logstash.crt'
+
+add below in output section (note : the logstash write user needs to be created beforehand)
+    cacert => '/etc/logstash/config/certs/ca.crt'
+    user => 'logstash_writer'
+    password => <logstash_writer_password>
+-------------------------------------------------------------------------------------------

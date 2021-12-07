@@ -1,0 +1,7 @@
+# add the instance information to yml file
+instances:
+  - name: 'es1'
+  - name: 'es2'
+  - name: 'es3'
+  - name: 'kibana'
+  - name: 'logstash'

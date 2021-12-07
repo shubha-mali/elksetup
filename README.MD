@@ -1,11 +1,11 @@
 Setup :
-? Cluster of 3 Elasticsearch nodes
-? 1 Logstash node
-? 	Logstash listening on TCP port 5042
-? 	Logstash can write to Elasticsearch
-? 1 Kibana node
-? 	Kibana listening on a public interface
-? 	Kibana can read from Elasticsearch
+ Cluster of 3 Elasticsearch nodes
+ 1 Logstash node
+	Logstash listening on TCP port 5042
+	Logstash can write to Elasticsearch
+1 Kibana node
+	Kibana listening on a public interface
+	Kibana can read from Elasticsearch
 
 ------------------------------------------------------------------------------------
 pre-requisites checks
